@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/bloc/book_list_bloc.dart';
 import 'package:flutter_app/model/book.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BookListLoadingWidget extends StatelessWidget {
   @override
@@ -67,44 +68,68 @@ class BooksLoadedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemBuilder: (context, index) => Container(
-          margin: EdgeInsets.all(8),
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-              color: Colors.blue[200], borderRadius: BorderRadius.circular(30)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                books[index].name,
-                style: TextStyle(fontSize: 28),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    books[index].author,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    books[index].genre,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "Copies left: " + books[index].copies.toString(),
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              )
-            ],
-          )),
+      itemBuilder: (context, index) => GestureDetector(
+        onTap: () => {},
+        child: Card(
+          color: Colors.blueAccent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          elevation: 10,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      books[index].name,
+                      style: TextStyle(fontSize: 28),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          final bloc = context.read<BookListBloc>();
+                          books[index].inWishlist
+                              ? bloc.removeBookFromWishlist(books[index])
+                              : bloc.addBookInWishlist(books[index]);
+                        },
+                        icon: Icon(
+                          books[index].inWishlist
+                              ? Icons.star
+                              : Icons.star_border_outlined,
+                          color: Colors.yellow,
+                        ))
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      books[index].author,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      books[index].genre,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Copies left: " + books[index].copies.toString(),
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
       itemCount: books.length,
     );
   }
